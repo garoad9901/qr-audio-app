@@ -5,11 +5,10 @@ import { Html5QrcodeScanner } from "html5-qrcode";
 
 export default function QRScanner() {
   const [qrResult, setQrResult] = useState(null);
-  const [audioSrc, setAudioSrc] = useState("");
+  const [audio, setAudio] = useState(null);
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
-
+    if (typeof window === "undefined") return; // SSR防止
     const scanner = new Html5QrcodeScanner("reader", {
       fps: 10,
       qrbox: { width: 250, height: 250 },
@@ -18,7 +17,7 @@ export default function QRScanner() {
     scanner.render(
       (decodedText) => {
         setQrResult(decodedText);
-        fetchAudio(decodedText);
+        playAudio(decodedText);
       },
       (errorMessage) => {
         console.log(errorMessage);
@@ -28,26 +27,20 @@ export default function QRScanner() {
     return () => scanner.clear();
   }, []);
 
-  const fetchAudio = async (code) => {
-    try {
-      const response = await fetch(`/api/get-audio?code=${code}`);
-      const data = await response.json();
-      if (data.audioUrl) {
-        setAudioSrc(data.audioUrl);
-      } else {
-        console.error("Audio not found");
-      }
-    } catch (error) {
-      console.error("Error fetching audio:", error);
+  const playAudio = (url) => {
+    if (audio) {
+      audio.pause();
     }
+    const newAudio = new Audio(url);
+    newAudio.play();
+    setAudio(newAudio);
   };
 
   return (
     <div className="flex flex-col items-center p-4">
       <h1 className="text-xl font-bold mb-4">QRコードスキャナー</h1>
       <div id="reader" className="w-full max-w-sm"></div>
-      {qrResult && <p className="mt-4">検出されたコード: {qrResult}</p>}
-      {audioSrc && <audio src={audioSrc} controls autoPlay />}
+      {qrResult && <p className="mt-4">検出されたURL: {qrResult}</p>}
     </div>
   );
 }
