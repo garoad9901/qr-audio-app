@@ -6,7 +6,7 @@ export async function GET(req) {
     const audioDatabase = {
       "123456": "https://example.com/audio1.mp3",
       "789012": "https://example.com/audio2.mp3",
-      "111111": "hhttp://garoadrun.s325.xrea.com/test.mp3",
+      "111111": "http://garoadrun.s325.xrea.com/test.mp3",
 
       "http://garoadrun.s325.xrea.com/test.mp3": "http://garoadrun.s325.xrea.com/test.mp3",
 
