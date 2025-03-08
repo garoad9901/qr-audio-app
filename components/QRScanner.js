@@ -1,12 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Html5QrcodeScanner } from "html5-qrcode";
 
 export default function QRScanner() {
   const [qrResult, setQrResult] = useState(null);
   const [audioSrc, setAudioSrc] = useState("");
   const [userInteracted, setUserInteracted] = useState(false);
+  const audioRef = useRef(null); // 音声インスタンスを保持
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -37,8 +38,11 @@ export default function QRScanner() {
       const data = await response.json();
       console.log("API Response:", data);
       if (data.audioUrl) {
-        console.log("Playing audio:", data.audioUrl);
-        playAudio(data.audioUrl);
+        console.log("Setting audio:", data.audioUrl);
+        setAudioSrc(data.audioUrl);
+        if (userInteracted) {
+          playAudio(data.audioUrl);
+        }
       } else {
         console.error("Audio not found");
       }
@@ -49,19 +53,23 @@ export default function QRScanner() {
 
   const playAudio = (url) => {
     if (!url) return;
-    const audio = new Audio(url);
-    const playPromise = audio.play();
 
-    if (playPromise !== undefined) {
-      playPromise
-        .then(() => {
-          console.log("Audio playback started.");
-        })
-        .catch((error) => {
-          console.error("Autoplay prevented. User action required.", error);
-          setAudioSrc(url); // 手動再生用にURLをセット
-        });
+    // 以前の音声を停止
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
     }
+
+    // 新しい Audio インスタンスを作成
+    const newAudio = new Audio(url);
+    audioRef.current = newAudio;
+
+    newAudio.play().then(() => {
+      console.log("Audio playback started.");
+    }).catch((error) => {
+      console.error("Autoplay prevented. User action required.", error);
+      setAudioSrc(url); // 手動再生用にURLをセット
+    });
   };
 
   return (
