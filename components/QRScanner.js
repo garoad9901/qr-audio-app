@@ -37,9 +37,13 @@ export default function QRScanner() {
       const response = await fetch(`/api/get-audio?code=${code}`);
       const data = await response.json();
       console.log("API Response:", data);
+
       if (data.audioUrl) {
         console.log("Setting audio URL:", data.audioUrl);
         setAudioSrc(data.audioUrl);
+        if (userInteracted) {
+          playAudio(data.audioUrl);
+        }
       } else {
         console.error("Audio not found");
       }
@@ -56,21 +60,23 @@ export default function QRScanner() {
   const playAudio = (url) => {
     if (!url) return;
 
-    // 以前の音声を停止
+    // **以前の音声を停止**
     if (audioRef.current) {
       audioRef.current.pause();
       audioRef.current.currentTime = 0;
     }
 
-    // **ボタンを押した瞬間に Audio インスタンスを作成する**
+    // **新しい Audio インスタンスを作成**
     const newAudio = new Audio(url);
     audioRef.current = newAudio;
 
-    newAudio.play().then(() => {
-      console.log("Audio playback started.");
-    }).catch((error) => {
-      console.error("iPhone autoplay prevented.", error);
-    });
+    newAudio.play()
+      .then(() => {
+        console.log("Audio playback started.");
+      })
+      .catch((error) => {
+        console.error("Autoplay prevented. User action required.", error);
+      });
   };
 
   return (
@@ -78,7 +84,7 @@ export default function QRScanner() {
       <h1 className="text-xl font-bold mb-4">QRコードスキャナー</h1>
       <div id="reader" className="w-full max-w-sm"></div>
       {qrResult && <p className="mt-4">検出されたコード: {qrResult}</p>}
-      {audioSrc && !userInteracted && (
+      {audioSrc && (
         <button
           className="mt-4 bg-blue-500 text-white p-2 rounded"
           onClick={handleUserInteraction}
