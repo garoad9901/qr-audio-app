@@ -38,17 +38,19 @@ export default function QRScanner() {
       const data = await response.json();
       console.log("API Response:", data);
       if (data.audioUrl) {
-        console.log("Setting audio:", data.audioUrl);
+        console.log("Setting audio URL:", data.audioUrl);
         setAudioSrc(data.audioUrl);
-        if (userInteracted) {
-          playAudio(data.audioUrl);
-        }
       } else {
         console.error("Audio not found");
       }
     } catch (error) {
       console.error("Error fetching audio:", error);
     }
+  };
+
+  const handleUserInteraction = () => {
+    setUserInteracted(true);
+    playAudio(audioSrc);
   };
 
   const playAudio = (url) => {
@@ -60,15 +62,14 @@ export default function QRScanner() {
       audioRef.current.currentTime = 0;
     }
 
-    // 新しい Audio インスタンスを作成
+    // **ボタンを押した瞬間に Audio インスタンスを作成する**
     const newAudio = new Audio(url);
     audioRef.current = newAudio;
 
     newAudio.play().then(() => {
       console.log("Audio playback started.");
     }).catch((error) => {
-      console.error("Autoplay prevented. User action required.", error);
-      setAudioSrc(url); // 手動再生用にURLをセット
+      console.error("iPhone autoplay prevented.", error);
     });
   };
 
@@ -80,10 +81,7 @@ export default function QRScanner() {
       {audioSrc && !userInteracted && (
         <button
           className="mt-4 bg-blue-500 text-white p-2 rounded"
-          onClick={() => {
-            setUserInteracted(true);
-            playAudio(audioSrc);
-          }}
+          onClick={handleUserInteraction}
         >
           音声を再生
         </button>
