@@ -6,6 +6,17 @@ export async function GET(req) {
     const audioDatabase = {
       "123456": "https://example.com/audio1.mp3",
       "789012": "https://example.com/audio2.mp3",
+
+      "http://garoadrun.s325.xrea.com/test.mp3": "http://garoadrun.s325.xrea.com/test.mp3",
+
+      "http://garoadrun.s325.xrea.com/mp3/DS046.MP3": "http://garoadrun.s325.xrea.com/mp3/DS046.MP3",
+      "http://garoadrun.s325.xrea.com/mp3/DS047.MP3": "http://garoadrun.s325.xrea.com/mp3/DS047.MP3",
+      "http://garoadrun.s325.xrea.com/mp3/DS127.MP3": "http://garoadrun.s325.xrea.com/mp3/DS127.MP3",
+      "http://garoadrun.s325.xrea.com/mp3/DS126.MP3": "http://garoadrun.s325.xrea.com/mp3/DS126.MP3",
+      "http://garoadrun.s325.xrea.com/mp3/DS052.MP3": "http://garoadrun.s325.xrea.com/mp3/DS052.MP3",
+
+
+
     };
   
     const audioUrl = audioDatabase[code];

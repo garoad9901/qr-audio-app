@@ -32,9 +32,7 @@ export default function QRScanner() {
     try {
       const response = await fetch(`/api/get-audio?code=${code}`);
       const data = await response.json();
-      console.log("API Response:", data); // 追加: APIのレスポンスを確認
       if (data.audioUrl) {
-        console.log("Playing audio:", data.audioUrl); // 追加: 再生されるURLを確認
         setAudioSrc(data.audioUrl);
       } else {
         console.error("Audio not found");
@@ -43,7 +41,6 @@ export default function QRScanner() {
       console.error("Error fetching audio:", error);
     }
   };
-  
 
   return (
     <div className="flex flex-col items-center p-4">
